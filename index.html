@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" class="dark">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SOBERANUS | The Financial Layer</title>
+
+    
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+
+        tailwind.config = {
+
+            darkMode: 'class',
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        gold: {
+
+                            400: '#F4D03F',
+
+                            500: '#D4AF37',
+
+                            600: '#B8860B',
+
+                        },
+
+                        dark: {
+
+                            950: '#020202', 
+
+                            900: '#080808',
+
+                            800: '#0f0f0f',
+
+                            700: '#141414'
+
+                        }
+
+                    },
+
+                    fontFamily: {
+
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+
+                        mono: ['JetBrains Mono', 'monospace'],
+
+                        serif: ['Playfair Display', 'serif'],
+
+                    },
+
+                    animation: {
+
+                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+
+                        'slide-arrow': 'slideArrow 1.5s infinite ease-in-out',
+
+                    },
+
+                    keyframes: {
+
+                        slideArrow: {
+
+                            '0%': { transform: 'translateX(-100%)', opacity: '0' },
+
+                            '50%': { opacity: '1' },
+
+                            '100%': { transform: 'translateX(100%)', opacity: '0' },
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    </script>
+
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+        body {
+
+            background-color: #020202;
+
+            color: #e5e5e5;
+
+            font-family: 'Inter', sans-serif;
+
+            overflow-x: hidden;
+
+            transition: background-color 0.3s, color 0.3s;
+
+        }
+
+        
+
+        /* Light Mode Overrides */
+
+        html:not(.dark) body { background-color: #f3f4f6; color: #111827; }
+
+        html:not(.dark) .glass-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+
+        html:not(.dark) .text-gray-400 { color: #4b5563; }
+
+        html:not(.dark) .text-gray-500 { color: #6b7280; }
+
+        html:not(.dark) .border-white\/5 { border-color: rgba(0,0,0,0.1); }
+
+        html:not(.dark) header { background: rgba(255,255,255,0.95); border-bottom: 1px solid #e5e7eb; }
+
+        html:not(.dark) .bg-white\/5 { background-color: rgba(0,0,0,0.05); }
+
+        html:not(.dark) .bg-black\/40 { background-color: #fff; border: 1px solid #e5e7eb; }
+
+        /* Subtle Background */
+
+        .bg-glow {
+
+            position: absolute;
+
+            width: 900px;
+
+            height: 900px;
+
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.03) 0%, rgba(0,0,0,0) 60%);
+
+            top: -400px;
+
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            z-index: -1;
+
+            pointer-events: none;
+
+        }
+
+        /* Glass Cards */
+
+        .glass-card {
+
+            background: rgba(255, 255, 255, 0.03); 
+
+            backdrop-filter: blur(12px);
+
+            -webkit-backdrop-filter: blur(12px);
+
+            border: 1px solid rgba(255, 255, 255, 0.06);
+
+            border-radius: 12px;
+
+            transition: all 0.4s ease;
+
+        }
+
+        .glass-card:hover {
+
+            border-color: rgba(212, 175, 55, 0.2);
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+
+        }
+
+        /* Gradient Text */
+
+        .text-gold-gradient {
+
+            background: linear-gradient(135deg, #F4D03F 20%, #B8860B 100%);
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+
+            color: transparent;
+
+        }
+
+        /* Primary Button */
+
+        .btn-primary {
+
+            background: #D4AF37;
+
+            color: #000;
+
+            font-weight: 700;
+
+            letter-spacing: 0.5px;
+
+            transition: all 0.3s;
+
+        }
+
+        .btn-primary:hover {
+
+            background: #F4D03F;
+
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.15);
+
+        }
+
+        /* Manifesto Quote */
+
+        .manifesto-quote {
+
+            border-left: 2px solid #D4AF37;
+
+            padding-left: 1rem;
+
+            font-style: italic;
+
+            color: #a3a3a3;
+
+        }
+
+        html:not(.dark) .manifesto-quote { color: #4b5563; }
+
+        /* Inputs */
+
+        input, select { color-scheme: dark; }
+
+        html:not(.dark) input, html:not(.dark) select { color-scheme: light; }
+
+        /* Scrollbar */
+
+        ::-webkit-scrollbar { width: 5px; }
+
+        ::-webkit-scrollbar-track { background: #020202; }
+
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+    </style>
+
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-gold-500 selection:text-black">
+
+    <div class="bg-glow"></div>
+
+    <header class="w-full fixed top-0 z-50 bg-dark-950/80 backdrop-blur-xl border-b border-white/5 transition-colors duration-300">
+
+        <div class="container mx-auto px-6 h-20 flex justify-between items-center">
+
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="window.location.reload()">
+
+                <div class="w-8 h-8 flex items-center justify-center text-gold-500 transition transform group-hover:rotate-12">
+
+                    <i class="fas fa-cube text-xl"></i>
+
+                </div>
+
+                <div class="flex flex-col">
+
+                    <span class="text-lg font-bold tracking-[0.2em] text-gold-gradient leading-none font-serif">SOBERANUS</span>
+
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-4">
+
+                <button onclick="toggleTheme()" class="text-gray-400 hover:text-gold-500 transition">
+
+                    <i class="fas fa-moon text-lg" id="theme-icon"></i>
+
+                </button>
+
+                <div id="auth-section">
+
+                    <button onclick="showLogin()" class="text-gold-500 hover:text-black dark:hover:text-white hover:bg-gold-500 transition text-xs font-bold tracking-widest uppercase border border-gold-500/20 px-4 py-2 rounded">
+
+                        Acessar
+
+                    </button>
+
+                </div>
+
+                
+
+                <div id="user-section" class="hidden flex items-center gap-6">
+
+                    <div class="hidden md:flex flex-col items-end">
+
+                        <span class="text-[9px] text-gray-500 uppercase tracking-widest">Soberano</span>
+
+                        <span id="header-username" class="text-sm font-bold text-gray-900 dark:text-white"></span>
+
+                    </div>
+
+                    <button onclick="logout()" class="text-gray-600 hover:text-red-500 transition">
+
+                        <i class="fas fa-power-off"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <div class="h-20"></div>
+
+    <main id="landing-page" class="flex-grow flex flex-col relative pb-10">
+
+        
+
+        <section class="container mx-auto px-6 py-24 flex flex-col items-center text-center max-w-4xl">
+
+            <h1 class="text-5xl md:text-7xl font-bold mb-8 tracking-tight font-serif text-gold-gradient">
+
+                SOBERANUS
+
+            </h1>
+
+            
+
+            <div class="space-y-6 text-gray-500 dark:text-gray-400 font-light text-base md:text-lg leading-relaxed max-w-2xl">
+
+                <p>
+
+                    O SOBERANUS é um sistema de gestão financeira descentralizada criado para quem exige ordem, clareza e autonomia no universo cripto.
+
+                </p>
+
+                <p>
+
+                    Aqui, você registra, analisa e organiza suas operações com precisão cirúrgica — <span class="text-gray-900 dark:text-gray-200">sem intermediários, sem vigilância e sem ruído.</span>
+
+                </p>
+
+                <div class="pt-4">
+
+                    <p class="text-gray-900 dark:text-white font-medium italic">Transforme dados em controle.</p>
+
+                    <p class="text-gold-500 font-medium italic">Transforme controle em soberania.</p>
+
+                </div>
+
+            </div>
+
+            
+
+            <div class="mt-12">
+
+                <button onclick="showRegister()" class="btn-primary px-10 py-4 rounded text-xs md:text-sm tracking-widest uppercase relative overflow-hidden group">
+
+                    <span class="relative z-10 block mb-1">COMECE A GERENCIAR AGORA</span>
+
+                    <div class="absolute bottom-1 left-0 w-full flex justify-center opacity-70">
+
+                        <i class="fas fa-arrow-right text-[10px] animate-slide-arrow"></i>
+
+                    </div>
+
+                </button>
+
+            </div>
+
+        </section>
+
+        <section id="features" class="container mx-auto px-6 py-10">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <div class="glass-card p-8 flex flex-col justify-between group">
+
+                    <div>
+
+                        <i class="fas fa-fingerprint text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i>
+
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Soberania Digital</h3>
+
+                        <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">O poder volta para o titular. Você controla seus registros, suas métricas e suas decisões.</p>
+
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5"><p class="manifesto-quote text-xs">Controle absoluto.<br>Vigilância zero.</p></div>
+
+                </div>
+
+                <div class="glass-card p-8 flex flex-col justify-between group">
+
+                    <div>
+
+                        <i class="fas fa-chart-line text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i>
+
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Gestão Inteligente</h3>
+
+                        <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Dados claros. Decisões conscientes. Registre compras e saques via PIX e DePIX com precisão.</p>
+
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5"><p class="manifesto-quote text-xs">Aqui, números não confundem.<br>Eles obedecem.</p></div>
+
+                </div>
+
+                <div class="glass-card p-8 flex flex-col justify-between group">
+
+                    <div>
+
+                        <i class="fas fa-user-shield text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i>
+
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Privacidade & Segurança</h3>
+
+                        <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">O que é seu permanece com você. Nenhum rastreamento. Nenhum monitoramento de IP.</p>
+
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5"><p class="manifesto-quote text-xs">Privacidade não é um recurso.<br>É o fundamento.</p></div>
+
+                </div>
+
+                <div class="glass-card p-8 flex flex-col justify-between group">
+
+                    <div>
+
+                        <i class="fas fa-dove text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i>
+
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Liberdade Financeira</h3>
+
+                        <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Sem travas. Sem intermediários. Acompanhe seus dados em tempo real.</p>
+
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5"><p class="manifesto-quote text-xs">Conhecimento é o que separa o operador do refém.</p></div>
+
+                </div>
+
+                <div class="glass-card p-8 flex flex-col justify-between md:col-span-2 group relative overflow-hidden">
+
+                    <div class="absolute right-0 top-0 p-8 opacity-5"><i class="fas fa-water text-9xl text-black dark:text-white"></i></div>
+
+                    <div class="relative z-10">
+
+                        <i class="fas fa-layer-group text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i>
+
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Infraestrutura Liquid Network</h3>
+
+                        <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 max-w-lg">Eficiência ancorada no Bitcoin. Uma camada financeira construída sobre o Bitcoin para emissão e troca de ativos com confidencialidade.</p>
+
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5 relative z-10"><p class="manifesto-quote text-xs">Tecnologia antiga no espírito.<br>Afiada na execução.</p></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="container mx-auto px-6 py-20 border-t border-gray-200 dark:border-white/5">
+
+            <div class="max-w-3xl mx-auto text-center">
+
+                <h2 class="text-sm font-bold text-gold-500 uppercase tracking-[0.3em] mb-8">Manifesto Soberanus</h2>
+
+                <div class="space-y-6 text-lg md:text-xl font-serif text-gray-600 dark:text-gray-300 leading-relaxed">
+
+                    <p>O sistema sempre foi grande. Complexo. Opaco. Intimidante.</p>
+
+                    <p>O SOBERANUS nasce para restaurar a ordem. Não para confrontar o sistema com caos, mas para vencê-lo com clareza, precisão e disciplina.</p>
+
+                    <p class="text-gray-900 dark:text-white">Aqui, o usuário não foge. Ele entende. Registra. Declara. Domina.</p>
+
+                </div>
+
+                <div class="flex justify-center gap-8 mt-10 text-xs font-mono text-gray-500 uppercase tracking-widest">
+
+                    <span>Sem vigilância</span><span>•</span><span>Sem intermediários</span><span>•</span><span>Sem dependência</span>
+
+                </div>
+
+                <div class="mt-12 p-6 border-l-2 border-gold-500 bg-white/5 text-left inline-block">
+
+                    <p class="text-sm italic text-gray-500 dark:text-gray-400">"Soberania não é rebeldia. É responsabilidade.<br><span class="text-gray-900 dark:text-white not-italic mt-2 block">E quem assume responsabilidade não teme o Leviatã."</span></p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="container mx-auto px-6 mt-8">
+
+            <div class="glass-card px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-gray-200 dark:border-white/5">
+
+                <div class="flex items-center gap-4">
+
+                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gold-500"><i class="fas fa-hand-holding-heart"></i></div>
+
+                    <div><p class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide">Suporte Voluntário</p><p class="text-xs text-gray-500 mt-1">Contribuição Soberana. Apoio consciente. Sem obrigação.</p></div>
+
+                </div>
+
+                <button onclick="openDonationModal()" class="btn-primary px-6 py-3 rounded text-xs font-bold uppercase tracking-wider">FAÇA SUA DOAÇÃO</button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <div id="auth-forms" class="hidden fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+
+        <div class="glass-card w-full max-w-md p-8 relative bg-white dark:bg-dark-900">
+
+            <button onclick="closeAuth()" class="absolute top-4 right-4 text-gray-500 hover:text-black dark:hover:text-white"><i class="fas fa-times"></i></button>
+
+            <div id="login-form" class="hidden text-center">
+
+                <i class="fas fa-fingerprint text-4xl text-gold-500 mb-6"></i>
+
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2 font-serif">Acesso Soberano</h2>
+
+                <p class="text-gray-500 text-xs mb-8">Descriptografar banco de dados local</p>
+
+                <input type="text" id="login-username" placeholder="Usuário" class="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white mb-3 focus:border-gold-500 outline-none text-sm">
+
+                <input type="password" id="login-password" placeholder="Senha" class="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white mb-6 focus:border-gold-500 outline-none text-sm">
+
+                <button onclick="performLogin()" class="w-full btn-primary py-3 rounded text-sm uppercase">ENTRAR</button>
+
+                <button onclick="switchAuthMode('register')" class="mt-6 text-xs text-gold-500 hover:text-black dark:hover:text-white transition uppercase tracking-wide">Criar nova identidade</button>
+
+            </div>
+
+            <div id="register-form" class="hidden text-center">
+
+                <i class="fas fa-key text-4xl text-gold-500 mb-6"></i>
+
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2 font-serif">Gerar Chaves</h2>
+
+                <input type="text" id="reg-username" placeholder="Novo Usuário" class="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white mb-3 focus:border-gold-500 outline-none text-sm">
+
+                <input type="password" id="reg-password" placeholder="Nova Senha" class="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white mb-6 focus:border-gold-500 outline-none text-sm">
+
+                <button onclick="performRegister()" class="w-full btn-primary py-3 rounded text-sm uppercase">CRIAR CARTEIRA</button>
+
+                <button onclick="switchAuthMode('login')" class="mt-6 text-xs text-gold-500 hover:text-black dark:hover:text-white transition uppercase tracking-wide">Voltar para Login</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="modal-overlay" class="hidden fixed inset-0 z-[70] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+
+        <div id="modal-content" class="glass-card w-full max-w-lg p-8 relative max-h-[90vh] overflow-y-auto bg-white dark:bg-dark-900">
+
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-black dark:hover:text-white"><i class="fas fa-times"></i></button>
+
+            <div id="modal-body"></div>
+
+        </div>
+
+    </div>
+
+    <main id="dashboard" class="hidden flex-grow container mx-auto px-4 md:px-6 py-8">
+
+        <div class="flex flex-col gap-6 items-start mb-10 border-b border-gray-200 dark:border-white/5 pb-6">
+
+            <div>
+
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white font-serif">Olá, <span id="dash-username" class="text-gold-500">Usuário</span></h2>
+
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 italic">Com a SOBERANUS, você tem Clareza para declarar e Liberdade para decidir!</p>
+
+            </div>
+
+            <div>
+
+                <span class="text-[10px] text-gold-500 font-mono block mb-1 tracking-wider uppercase">Saldo Total Estimado</span>
+
+                <div class="flex items-center gap-3">
+
+                    <span id="total-balance-display" class="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">R$ •••••</span>
+
+                    <button onclick="toggleBalance()" class="text-gray-400 hover:text-gold-500 transition text-xl"><i class="fas fa-eye" id="balance-icon"></i></button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-10">
+
+            <button onclick="openModal('modal-buy')" class="glass-card p-6 h-40 flex flex-col justify-between items-start text-left group hover:border-green-500/30">
+
+                <div class="w-8 h-8 rounded bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-500 group-hover:bg-green-500 group-hover:text-black transition"><i class="fas fa-arrow-down"></i></div>
+
+                <div><h3 class="font-bold text-gray-900 dark:text-white text-lg">Comprar</h3><p class="text-[10px] text-gray-500 uppercase tracking-wide">Registrar Entrada</p></div>
+
+            </button>
+
+            <button onclick="openModal('modal-sell')" class="glass-card p-6 h-40 flex flex-col justify-between items-start text-left group hover:border-red-500/30">
+
+                <div class="w-8 h-8 rounded bg-red-900/20 flex items-center justify-center text-red-600 dark:text-red-500 group-hover:bg-red-500 group-hover:text-black transition"><i class="fas fa-arrow-up"></i></div>
+
+                <div><h3 class="font-bold text-gray-900 dark:text-white text-lg">Sacar</h3><p class="text-[10px] text-gray-500 uppercase tracking-wide">Registrar Saída</p></div>
+
+            </button>
+
+            <button onclick="openModal('modal-wallet')" class="glass-card p-6 h-40 flex flex-col justify-between items-start text-left group hover:border-blue-500/30">
+
+                <div class="w-8 h-8 rounded bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-500 group-hover:bg-blue-500 group-hover:text-black transition"><i class="fas fa-wallet"></i></div>
+
+                <div><h3 class="font-bold text-gray-900 dark:text-white text-lg">Carteira</h3><p class="text-[10px] text-gray-500 uppercase tracking-wide">Saldos Globais</p></div>
+
+            </button>
+
+            <button onclick="openModal('modal-ir')" class="glass-card p-6 h-40 flex flex-col justify-between items-start text-left group border-gold-500/20 hover:border-gold-500/50">
+
+                <div class="w-8 h-8 rounded bg-gold-900/20 flex items-center justify-center text-gold-600 dark:text-gold-500 group-hover:bg-gold-500 group-hover:text-black transition"><i class="fas fa-file-contract"></i></div>
+
+                <div><h3 class="font-bold text-gold-600 dark:text-gold-500 text-lg">Declaração</h3><p class="text-[10px] text-gray-500 uppercase tracking-wide">Gerar PDF</p></div>
+
+            </button>
+
+        </div>
+
+        <div class="mb-10">
+
+            <div class="glass-card p-6 flex flex-col md:flex-row justify-between items-center gap-6 w-full">
+
+                <div class="w-full md:w-1/3">
+
+                    <h3 class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Resultado Financeiro (PnL)</h3>
+
+                    <span class="text-[10px] text-gray-400">Fluxo de Caixa Consolidado</span>
+
+                    <div class="mt-2"><span id="pnl-value" class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">R$ 0,00</span></div>
+
+                </div>
+
+                <div class="w-full md:w-2/3">
+
+                    <div class="grid grid-cols-2 gap-4 text-[10px] mb-2">
+
+                        <div class="flex justify-between"><span class="text-gray-500">Entradas Totais</span><span id="total-in" class="text-gray-900 dark:text-white font-mono">R$ 0</span></div>
+
+                        <div class="flex justify-between"><span class="text-gray-500">Saídas Totais</span><span id="total-out" class="text-gray-900 dark:text-white font-mono">R$ 0</span></div>
+
+                    </div>
+
+                    <div class="w-full bg-gray-200 dark:bg-[#111] h-2 rounded-full overflow-hidden"><div id="pnl-bar" class="bg-gray-500 h-full w-0 transition-all duration-500"></div></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+
+            <div class="lg:col-span-2 glass-card p-6">
+
+                <h3 class="text-xs font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-200 dark:border-white/5 pb-3 uppercase tracking-wide flex items-center gap-2"><i class="fas fa-list text-gold-500"></i> Livro Razão</h3>
+
+                <div class="overflow-x-auto max-h-80 overflow-y-auto pr-2">
+
+                    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+
+                        <thead class="text-[10px] text-gray-500 uppercase bg-black/5 dark:bg-white/5 sticky top-0 backdrop-blur-sm">
+
+                            <tr><th class="px-4 py-3 font-semibold">Data</th><th class="px-4 py-3 font-semibold">Tipo</th><th class="px-4 py-3 font-semibold">Valor</th><th class="px-4 py-3 font-semibold">Qtd</th></tr>
+
+                        </thead>
+
+                        <tbody id="transaction-table-body" class="divide-y divide-gray-200 dark:divide-white/5"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="glass-card p-6">
+
+                <h3 class="text-xs font-bold text-gray-900 dark:text-white mb-6 uppercase tracking-wide flex items-center gap-2"><i class="fas fa-chart-bar text-gold-500"></i> Evolução</h3>
+
+                <div class="h-64 w-full"><canvas id="evolutionChart"></canvas></div>
+
+            </div>
+
+        </div>
+
+        
+
+        <div class="text-center mt-12 pb-8">
+
+            <button onclick="openDonationModal()" class="text-xs text-gray-600 hover:text-gold-500 transition border-b border-dashed border-gray-700 hover:border-gold-500 pb-1 uppercase tracking-widest">Contribuição Soberana</button>
+
+        </div>
+
+    </main>
+
+    <footer class="mt-auto py-10 text-center border-t border-gray-200 dark:border-white/5 bg-gray-100 dark:bg-[#020202]">
+
+        <div class="mb-4"><i class="fas fa-cube text-gold-500/50 text-xl"></i></div>
+
+        <p class="text-gray-500 text-xs mb-2 font-mono">Desenvolvido por: <span class="text-gold-500 font-bold">THxWeb3Dev</span> | SOBERANUS</p>
+
+        <p class="text-[9px] text-gray-700 uppercase tracking-[0.2em]">&copy; 2026 Todos os direitos reservados.</p>
+
+    </footer>
+
+    <script>
+
+        let balanceVisible = false;
+
+        function init() {
+
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+
+                document.documentElement.classList.add('dark'); document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+
+            } else {
+
+                document.documentElement.classList.remove('dark'); document.getElementById('theme-icon').classList.replace('fa-sun', 'fa-moon');
+
+            }
+
+            const storedUser = sessionStorage.getItem('soberanus_user');
+
+            if (storedUser) loginUser(JSON.parse(storedUser));
+
+        }
+
+        function toggleTheme() {
+
+            const html = document.documentElement; const icon = document.getElementById('theme-icon');
+
+            if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.theme = 'light'; icon.classList.replace('fa-sun', 'fa-moon'); } 
+
+            else { html.classList.add('dark'); localStorage.theme = 'dark'; icon.classList.replace('fa-moon', 'fa-sun'); }
+
+        }
+
+        function toggleBalance() {
+
+            balanceVisible = !balanceVisible;
+
+            const icon = document.getElementById('balance-icon');
+
+            if(balanceVisible) icon.classList.replace('fa-eye', 'fa-eye-slash'); else icon.classList.replace('fa-eye-slash', 'fa-eye');
+
+            calculateMetrics();
+
+        }
+
+        // Auth
+
+        function showLogin() { document.getElementById('auth-forms').classList.remove('hidden'); switchAuthMode('login'); }
+
+        function showRegister() { document.getElementById('auth-forms').classList.remove('hidden'); switchAuthMode('register'); }
+
+        function closeAuth() { document.getElementById('auth-forms').classList.add('hidden'); }
+
+        function switchAuthMode(mode) {
+
+            document.getElementById('login-form').classList.toggle('hidden', mode !== 'login');
+
+            document.getElementById('register-form').classList.toggle('hidden', mode !== 'register');
+
+        }
+
+        function performRegister() {
+
+            const user = document.getElementById('reg-username').value;
+
+            if(!user) return alert('Identificação necessária.');
+
+            localStorage.setItem('sob_user_' + user, JSON.stringify({ username: user, createdAt: new Date() }));
+
+            loginUser({ username: user }); closeAuth();
+
+        }
+
+        function performLogin() {
+
+            const user = document.getElementById('login-username').value;
+
+            let userData = JSON.parse(localStorage.getItem('sob_user_' + user));
+
+            if (!userData) userData = { username: user }; 
+
+            loginUser(userData); closeAuth();
+
+        }
+
+        function loginUser(user) {
+
+            currentUser = user; sessionStorage.setItem('soberanus_user', JSON.stringify(user));
+
+            document.getElementById('landing-page').classList.add('hidden');
+
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            document.getElementById('auth-section').classList.add('hidden');
+
+            document.getElementById('user-section').classList.remove('hidden');
+
+            document.getElementById('header-username').textContent = user.username;
+
+            document.getElementById('dash-username').textContent = user.username;
+
+            loadTransactions(); updateDashboard();
+
+        }
+
+        function logout() { sessionStorage.removeItem('soberanus_user'); window.location.reload(); }
+
+        // Data
+
+        let currentUser = null; let transactions = []; let charts = {}; 
+
+        function loadTransactions() { const data = localStorage.getItem('sob_tx_' + currentUser.username); transactions = data ? JSON.parse(data) : []; }
+
+        function saveTransactions() { localStorage.setItem('sob_tx_' + currentUser.username, JSON.stringify(transactions)); updateDashboard(); }
+
+        function updateDashboard() { updateHistoryTable(); calculateMetrics(); renderCharts(); }
+
+        function calculateMetrics() {
+
+            let totalIn = 0; let totalOut = 0; let currentHoldings = 0; 
+
+            transactions.forEach(t => { if(t.type === 'BUY') { totalIn += t.fiatValue; currentHoldings += t.cryptoValue; } else { totalOut += t.fiatValue; currentHoldings -= t.cryptoValue; } });
+
+            
+
+            const estimatedFiatBalance = currentHoldings * 1.00; 
+
+            const pnl = totalOut - totalIn + estimatedFiatBalance; 
+
+            const isProfit = pnl >= 0;
+
+            const balanceText = balanceVisible ? `R$ ${estimatedFiatBalance.toFixed(2)}` : `R$ •••••`;
+
+            document.getElementById('total-balance-display').innerText = balanceText;
+
+            document.getElementById('total-in').innerText = `R$ ${totalIn.toFixed(0)}`;
+
+            document.getElementById('total-out').innerText = `R$ ${totalOut.toFixed(0)}`;
+
+            
+
+            const pnlEl = document.getElementById('pnl-value');
+
+            pnlEl.innerText = `${isProfit ? '+' : ''} R$ ${pnl.toFixed(2)}`;
+
+            pnlEl.className = `text-2xl font-bold tracking-tight ${isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`;
+
+            document.getElementById('pnl-bar').style.width = `${Math.min(totalIn + totalOut > 0 ? (Math.abs(pnl)/(totalIn+totalOut))*100 : 0, 100)}%`;
+
+            document.getElementById('pnl-bar').className = `h-full ${isProfit ? 'bg-green-500' : 'bg-red-500'}`;
+
+        }
+
+        function registerTransaction(type) {
+
+            const valFiat = parseFloat(document.getElementById('inp-fiat').value)||0;
+
+            const valCrypto = parseFloat(document.getElementById('inp-crypto').value)||0;
+
+            const feePct = parseFloat(document.getElementById('inp-fee-pct').value)||0;
+
+            const feeFixed = parseFloat(document.getElementById('inp-fee-fixed').value)||0;
+
+            const dateInput = document.getElementById('inp-date').value;
+
+            if(valFiat <= 0 || !dateInput) return alert("Dados inválidos.");
+
+            const parts = dateInput.split('-');
+
+            const tx = { id: Date.now(), date: new Date(parts[0], parts[1]-1, parts[2], 12,0,0).toISOString(), type, fiatValue: valFiat, cryptoValue: valCrypto, feePct, feeFixed, feeFiatTotal: (valFiat * (feePct/100)) + feeFixed };
+
+            transactions.push(tx); saveTransactions(); closeModal();
+
+        }
+
+        // Modals
+
+        function openModal(type) {
+
+            const overlay = document.getElementById('modal-overlay'); const body = document.getElementById('modal-body'); overlay.classList.remove('hidden');
+
+            const today = new Date().toISOString().split('T')[0];
+
+            const inputClass = "w-full bg-gray-100 dark:bg-dark-900 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white focus:border-gold-500 outline-none placeholder-gray-500 text-sm";
+
+            const labelClass = "block text-[10px] text-gray-500 mb-1 uppercase tracking-wider font-bold";
+
+            let html = '';
+
+            if(type === 'modal-buy' || type === 'modal-sell') {
+
+                const isBuy = type === 'modal-buy';
+
+                const color = isBuy ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500';
+
+                html = `<h2 class="text-xl font-bold ${color} mb-6 border-b border-gray-200 dark:border-gray-800 pb-4 font-serif">${isBuy?'Registrar Compra':'Registrar Saque'}</h2><div class="space-y-4"><div><label class="${labelClass}">Data</label><input type="date" id="inp-date" value="${today}" class="${inputClass}"></div><div class="grid grid-cols-2 gap-4"><div><label class="${labelClass}">Valor R$</label><input type="number" id="inp-fiat" class="${inputClass}"></div><div><label class="${labelClass}">Qtd DePIX</label><input type="number" id="inp-crypto" class="${inputClass}"></div></div><div class="grid grid-cols-2 gap-4 bg-gray-5 dark:bg-white/5 p-3 rounded"><div><label class="${labelClass}">Taxa %</label><input type="number" id="inp-fee-pct" placeholder="0" class="${inputClass}"></div><div><label class="${labelClass}">Taxa Fixa R$</label><input type="number" id="inp-fee-fixed" placeholder="0" class="${inputClass}"></div></div><button onclick="registerTransaction('${isBuy?'BUY':'SELL'}')" class="w-full py-4 mt-2 font-bold rounded bg-gray-900 dark:bg-white text-white dark:text-black uppercase tracking-widest text-xs">Salvar Registro</button></div>`;
+
+            } else if (type === 'modal-wallet') {
+
+                let currentHoldings = 0; transactions.forEach(t => { if(t.type === 'BUY') currentHoldings += t.cryptoValue; else currentHoldings -= t.cryptoValue; });
+
+                const valDePIX = currentHoldings;
+
+                const valBRL = valDePIX * 1; 
+
+                const valUSD = valBRL / 5.20; 
+
+                const valEUR = valBRL / 5.60;
+
+                const valSats = (valBRL / 600000) * 100000000; 
+
+                html = `<h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 font-serif border-b border-gray-200 dark:border-white/5 pb-4">Saldos Globais</h2><div class="space-y-3">
+
+                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-white/5 rounded"><span class="text-gray-500 text-xs font-bold">DEPIX</span><span class="text-gray-900 dark:text-white font-mono">${valDePIX.toFixed(4)}</span></div>
+
+                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-white/5 rounded"><span class="text-orange-500 text-xs font-bold">SATOCHIS BTC</span><span class="text-gray-900 dark:text-white font-mono">${valSats.toFixed(0)}</span></div>
+
+                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-white/5 rounded"><span class="text-green-600 dark:text-green-400 text-xs font-bold">REAL (BRL)</span><span class="text-gray-900 dark:text-white font-mono">R$ ${valBRL.toFixed(2)}</span></div>
+
+                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-white/5 rounded"><span class="text-blue-500 text-xs font-bold">DOLLAR (USD)</span><span class="text-gray-900 dark:text-white font-mono">$ ${valUSD.toFixed(2)}</span></div>
+
+                    <div class="flex justify-between p-3 bg-gray-50 dark:bg-white/5 rounded"><span class="text-indigo-500 text-xs font-bold">EURO (EUR)</span><span class="text-gray-900 dark:text-white font-mono">€ ${valEUR.toFixed(2)}</span></div></div>`;
+
+            } else if (type === 'modal-ir') {
+
+                html = `<h2 class="text-xl font-bold text-gold-500 mb-6 font-serif">Gerar Relatório Fiscal</h2><div class="space-y-4"><input type="text" id="ir-name" placeholder="Nome Completo" class="${inputClass}"><input type="text" id="ir-cpf" placeholder="CPF" class="${inputClass}"><input type="text" id="ir-address" placeholder="Endereço Completo" class="${inputClass}"><input type="text" id="ir-cep" placeholder="CEP" class="${inputClass}"><button onclick="generatePDF()" class="w-full py-3 btn-primary rounded mt-2 text-xs uppercase tracking-widest">Baixar PDF</button></div>`;
+
+            } else if (type === 'modal-pix') {
+
+                html = `<h2 class="text-xl font-bold text-green-600 dark:text-green-500 mb-2 font-serif">Doação via PIX</h2><p class="text-xs text-gray-500 mb-6">Processamento Seguro & Descentralizado</p><div id="pix-input-area"><input type="number" id="pix-amount" value="10" min="5" class="${inputClass} text-center text-3xl font-bold mb-6 !py-4"><button onclick="fetchPixCode()" class="w-full py-4 bg-green-600 hover:bg-green-500 rounded font-bold text-black uppercase tracking-widest text-xs">Gerar QR Code</button></div><div id="pix-result" class="hidden flex flex-col items-center mt-4"><div class="bg-white p-3 rounded mb-4" id="pix-qr-container"></div><div class="flex w-full"><input type="text" id="pix-string" readonly class="w-full bg-gray-100 dark:bg-dark-900 border border-gray-300 dark:border-gray-700 rounded-l p-3 text-xs font-mono text-gray-500"><button onclick="copyPixString()" class="bg-gray-700 px-4 rounded-r hover:bg-gray-600 text-white"><i class="fas fa-copy"></i></button></div></div>`;
+
+            }
+
+            body.innerHTML = html;
+
+        }
+
+        // --- Doações e PDF ---
+
+        function openDonationModal() {
+
+            const overlay = document.getElementById('modal-overlay'); const body = document.getElementById('modal-body'); overlay.classList.remove('hidden');
+
+            body.innerHTML = `<div class="text-center mb-8"><i class="fas fa-hand-holding-heart text-3xl text-gold-500 mb-4"></i><h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2 font-serif uppercase tracking-widest">Contribuição Soberana</h2><p class="text-xs text-gray-500">Apoio consciente. Sem obrigação.</p></div><div class="mb-6 p-4 border-l-2 border-gold-500 bg-gray-50 dark:bg-white/5 text-left"><p class="text-sm text-gray-600 dark:text-gray-300 italic leading-relaxed">"O SOBERANUS é mantido de forma independente... Se este sistema gera valor para você, contribuições voluntárias ajudam a sustentar sua continuidade."</p></div><button onclick="openModal('modal-pix')" class="w-full py-4 mb-8 bg-green-100 dark:bg-green-900/20 border border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500 hover:text-white dark:hover:text-black rounded font-bold uppercase tracking-widest text-xs transition">Doar via PIX</button><div class="space-y-3 mb-8"><div class="flex items-center justify-between bg-gray-100 dark:bg-black/40 p-3 rounded border border-gray-300 dark:border-white/5 group hover:border-gold-500/30 transition"><div><span class="text-[10px] text-gold-600 dark:text-gold-500 font-bold block uppercase">Bitcoin On-Chain</span><code class="text-[10px] text-gray-500 font-mono">bc1qvsu6...aepd</code></div><button onclick="copyAddress('bc1qvsu6n806jg8zswkvpyqxe9dujs6q5398jkaepd', 'Bitcoin On-Chain')" class="text-gray-400 hover:text-black dark:hover:text-white px-2"><i class="fas fa-copy"></i></button></div><div class="flex items-center justify-between bg-gray-100 dark:bg-black/40 p-3 rounded border border-gray-300 dark:border-white/5 group hover:border-gold-500/30 transition"><div><span class="text-[10px] text-gold-600 dark:text-gold-500 font-bold block uppercase">Bitcoin Lightning</span><code class="text-[10px] text-gray-500 font-mono">web3sats...com</code></div><button onclick="copyAddress('web3satsfinance@ln.satsails.com', 'Bitcoin Lightning')" class="text-gray-400 hover:text-black dark:hover:text-white px-2"><i class="fas fa-copy"></i></button></div><div class="flex items-center justify-between bg-gray-100 dark:bg-black/40 p-3 rounded border border-gray-300 dark:border-white/5 group hover:border-gold-500/30 transition"><div><span class="text-[10px] text-gold-600 dark:text-gold-500 font-bold block uppercase">Liquid Network</span><code class="text-[10px] text-gray-500 font-mono">lq1qq2gf...0nt</code></div><button onclick="copyAddress('lq1qq2gflwdl95jlexg6tmulcdgdlrv8jwc64ulnpp0jhs0xgx0v02vhyqqj6ag980al9gumlx3dk78q2q6yntqgzz9suuzjgf0nt', 'Liquid Network')" class="text-gray-400 hover:text-black dark:hover:text-white px-2"><i class="fas fa-copy"></i></button></div><div class="flex items-center justify-between bg-gray-100 dark:bg-black/40 p-3 rounded border border-gray-300 dark:border-white/5 group hover:border-gold-500/30 transition"><div><span class="text-[10px] text-gold-600 dark:text-gold-500 font-bold block uppercase">EVM (BSC/POL)</span><code class="text-[10px] text-gray-500 font-mono">0x135a83...8ed</code></div><button onclick="copyAddress('0x135a83c5a641a4265297853dd70b6f7565e5c8ed', 'EVM (BSC/Base/Polygon)')" class="text-gray-400 hover:text-black dark:hover:text-white px-2"><i class="fas fa-copy"></i></button></div></div><p class="text-[10px] text-gray-400 text-center uppercase tracking-wide">Nenhuma funcionalidade é bloqueada. Nenhum privilégio é comprado.<br>Apoiar é um ato de convicção.</p>`;
+
+        }
+
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+
+        function renderCharts() {
+
+            const ctxEv = document.getElementById('evolutionChart').getContext('2d');
+
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+            let buys = new Array(12).fill(0), sells = new Array(12).fill(0);
+
+            transactions.forEach(t => { const m = new Date(t.date).getMonth(); if(t.type === 'BUY') buys[m] += t.fiatValue; else sells[m] += t.fiatValue; });
+
+            if(charts.evolution) charts.evolution.destroy();
+
+            charts.evolution = new Chart(ctxEv, { type: 'bar', data: { labels: months, datasets: [{ label: 'Entradas', data: buys, backgroundColor: '#22c55e', borderRadius: 2 }, { label: 'Saídas', data: sells, backgroundColor: '#ef4444', borderRadius: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#6b7280', font: {size: 9, family: 'Mono'} } }, y: { grid: { color: 'rgba(107, 114, 128, 0.2)' }, ticks: { color: '#6b7280', font: {size: 9, family: 'Mono'} } } } } });
+
+        }
+
+        function updateHistoryTable() {
+
+            const tbody = document.getElementById('transaction-table-body');
+
+            tbody.innerHTML = '';
+
+            const sorted = [...transactions].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            if(sorted.length === 0) tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-xs text-gray-500 font-mono">Nenhum registro encontrado.</td></tr>';
+
+            sorted.forEach(t => {
+
+                const isBuy = t.type === 'BUY';
+
+                tbody.innerHTML += `<tr class="hover:bg-gray-100 dark:hover:bg-white/5 transition border-b border-gray-200 dark:border-white/5"><td class="px-4 py-3 text-xs font-mono text-gray-600 dark:text-gray-400">${new Date(t.date).toLocaleDateString('pt-BR')}</td><td class="px-4 py-3 text-xs font-bold ${isBuy?'text-green-600 dark:text-green-500':'text-red-600 dark:text-red-500'}">${isBuy?'ENT':'SAI'}</td><td class="px-4 py-3 text-xs font-mono text-gray-900 dark:text-white">R$ ${t.fiatValue.toFixed(2)}</td><td class="px-4 py-3 text-xs font-mono text-gray-500">${t.cryptoValue.toFixed(4)}</td></tr>`;
+
+            });
+
+        }
+
+        // --- PDF LOGIC FINAL CORRECTED ---
+
+        function generatePDF() {
+
+            const { jsPDF } = window.jspdf;
+
+            const doc = new jsPDF();
+
+            
+
+            // Header
+
+            doc.setFillColor(20, 20, 20); doc.rect(0, 0, 210, 40, 'F');
+
+            doc.setTextColor(212, 175, 55); doc.setFontSize(24); doc.setFont("helvetica", "bold");
+
+            doc.text("SOBERANUS", 14, 25);
+
+            doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont("helvetica", "normal");
+
+            doc.text("Financial Layer | Extrato Auxiliar", 140, 25);
+
+            // User Info
+
+            const name = document.getElementById('ir-name').value || "N/A";
+
+            const cpf = document.getElementById('ir-cpf').value || "N/A";
+
+            const address = document.getElementById('ir-address').value || "N/A";
+
+            const cep = document.getElementById('ir-cep').value || "N/A";
+
+            
+
+            doc.setTextColor(0,0,0); doc.setFontSize(10); 
+
+            doc.text(`Contribuinte: ${name}`, 14, 50);
+
+            doc.text(`CPF: ${cpf}`, 14, 56);
+
+            doc.text(`Endereço: ${address}`, 14, 62);
+
+            doc.text(`CEP: ${cep}`, 14, 68);
+
+            
+
+            doc.setDrawColor(200, 200, 200);
+
+            doc.line(14, 72, 196, 72);
+
+            // Calculation Logic
+
+            let totalBuy = 0, totalSell = 0, totalFees = 0, totalPnL = 0;
+
+            
+
+            let rows = transactions.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(t => {
+
+                // SOMA APENAS A TAXA FIXA EM R$ (IGNORA %)
+
+                const extraFee = parseFloat(t.feeFixed || 0); 
+
+                totalFees += extraFee;
+
+                
+
+                if(t.type === 'BUY') {
+
+                    totalBuy += t.fiatValue;
+
+                } else {
+
+                    totalSell += t.fiatValue;
+
+                }
+
+                
+
+                return [
+
+                    new Date(t.date).toLocaleDateString('pt-BR'), 
+
+                    t.type==='BUY'?'COMPRA':'VENDA', 
+
+                    `R$ ${t.fiatValue.toFixed(2)}`, 
+
+                    `${t.cryptoValue.toFixed(4)}`, 
+
+                    t.feePct > 0 ? `${t.feePct}%` : `R$ ${extraFee.toFixed(2)}`
+
+                ];
+
+            });
+
+            // Logic: PnL = (Sold - Bought) - Fees Paid
+
+            totalPnL = (totalSell - totalBuy) - totalFees;
+
+            doc.autoTable({ 
+
+                startY: 75, 
+
+                head: [['DATA','OPERAÇÃO','VALOR BRL','QTD DEPIX','TAXAS']], 
+
+                body: rows, 
+
+                headStyles: {fillColor:[20,20,20], textColor:[212,175,55]} 
+
+            });
+
+            
+
+            // Summary Table
+
+            let finalY = doc.lastAutoTable.finalY + 15;
+
+            doc.setFontSize(12); doc.setFont("helvetica", "bold"); 
+
+            doc.text(`RESUMO CONSOLIDADO ANUAL ${new Date().getFullYear()}`, 14, finalY);
+
+            
+
+            doc.autoTable({
+
+                startY: finalY + 5,
+
+                head: [['TOTAL COMPRADO', 'TOTAL VENDIDO', 'TAXAS EXTRA', 'TOTAL LUCRO/PREJUIZO']],
+
+                body: [[
+
+                    `R$ ${totalBuy.toFixed(2)}`,
+
+                    `R$ ${totalSell.toFixed(2)}`,
+
+                    `R$ ${totalFees.toFixed(2)}`,
+
+                    `R$ ${totalPnL.toFixed(2)}`
+
+                ]],
+
+                headStyles: {fillColor:[50,50,50], textColor:[255,255,255]},
+
+                styles: {halign: 'center'}
+
+            });
+
+            doc.save('soberanus_report.pdf');
+
+            closeModal();
+
+        }
+
+        async function fetchPixCode() {
+
+            const val = document.getElementById('pix-amount').value;
+
+            try {
+
+                // Fetch API invisível
+
+                const res = await fetch(`https://liquidx.pro/api/integrated-payment?value=${val}&description=Donation&code=YITOWQXGVZETOPAY`);
+
+                const json = await res.json();
+
+                
+
+                if(json.pix.success) {
+
+                    const copyPaste = json.pix.data.response.qrCopyPaste;
+
+                    document.getElementById('pix-input-area').classList.add('hidden');
+
+                    document.getElementById('pix-result').classList.remove('hidden');
+
+                    document.getElementById('pix-string').value = copyPaste;
+
+                    const container = document.getElementById('pix-qr-container');
+
+                    container.innerHTML = ""; 
+
+                    new QRCode(container, { text: copyPaste, width: 180, height: 180, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.L });
+
+                }
+
+            } catch(e) { alert('Erro na comunicação com gateway.'); }
+
+        }
+
+        function copyPixString() { navigator.clipboard.writeText(document.getElementById('pix-string').value); alert('Código Copiado!'); }
+
+        function copyAddress(address, networkName) {
+
+            navigator.clipboard.writeText(address);
+
+            Swal.fire({ icon: 'warning', title: 'Endereço Copiado!', html: `Você copiou o endereço da rede: <br><b>${networkName}</b><br><br>Envie APENAS através desta rede.`, background: '#1a1a1a', color: '#fff', confirmButtonColor: '#D4AF37' });
+
+        }
+
+        init();
+
+    </script>
+
+</body>
+
+</html>
+
