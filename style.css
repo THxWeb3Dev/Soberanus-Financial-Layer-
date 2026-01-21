@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+body {
+    background-color: #020202;
+    color: #e5e5e5;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.3s, color 0.3s;
+    width: 100%;
+}
+
+/* Light Mode Overrides */
+html:not(.dark) body { background-color: #f3f4f6; color: #111827; }
+html:not(.dark) .glass-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(0, 0, 0, 0.1); }
+html:not(.dark) header { background: rgba(255,255,255,0.95); border-bottom: 1px solid #e5e7eb; }
+html:not(.dark) .text-gray-400 { color: #4b5563; }
+html:not(.dark) .text-gray-500 { color: #6b7280; }
+html:not(.dark) .border-white\/5 { border-color: rgba(0,0,0,0.1); }
+html:not(.dark) .bg-white\/5 { background-color: rgba(0,0,0,0.05); }
+html:not(.dark) .bg-black\/40 { background-color: #fff; border: 1px solid #e5e7eb; }
+
+.bg-glow {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at top, rgba(212, 175, 55, 0.05) 0%, rgba(0,0,0,0) 70%);
+    top: 0; left: 0; z-index: -1; pointer-events: none;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.03); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    width: 100%;
+}
+
+.text-gold-gradient {
+    background: linear-gradient(135deg, #F4D03F 20%, #B8860B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.btn-primary { background: #D4AF37; color: #000; font-weight: 700; transition: all 0.3s; }
+.btn-primary:hover { background: #F4D03F; }
+
+.manifesto-quote {
+    border-left: 2px solid #D4AF37;
+    padding-left: 1rem;
+    font-style: italic;
+    color: #a3a3a3;
+}
+html:not(.dark) .manifesto-quote { color: #4b5563; }
+
+input, select { font-size: 16px !important; color-scheme: dark; }
+html:not(.dark) input, html:not(.dark) select { color-scheme: light; }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+/* 3D Progress Bar Style */
+.progress-3d {
+    background: linear-gradient(90deg, #B8860B, #F4D03F, #B8860B);
+    background-size: 200% 100%;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4);
+}

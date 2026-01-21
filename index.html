@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SOBERANUS | The Financial Layer</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta property="og:title" content="SOBERANUS | The Financial Layer">
+    <meta property="og:description" content="Gestão financeira descentralizada. Zero Monitoramento.">
+    <meta property="og:image" content="https://soberanus-finance.vercel.app/preview.png">
+    <meta property="og:url" content="https://soberanus-finance.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://soberanus-finance.vercel.app/preview.png">
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: { 400: '#F4D03F', 500: '#D4AF37', 600: '#B8860B' },
+                        dark: { 950: '#020202', 900: '#080808', 800: '#0f0f0f', 700: '#141414' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    animation: {
+                        'slide-arrow': 'slideArrow 1.5s infinite ease-in-out',
+                        'gradient-x': 'gradientX 2s ease infinite',
+                    },
+                    keyframes: {
+                        slideArrow: {
+                            '0%': { transform: 'translateX(-100%)', opacity: '0' },
+                            '50%': { opacity: '1' },
+                            '100%': { transform: 'translateX(100%)', opacity: '0' },
+                        },
+                        gradientX: {
+                            '0%, 100%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-gold-500 selection:text-black">
+
+    <div class="bg-glow"></div>
+
+    <header class="w-full fixed top-0 z-50 bg-dark-950/80 backdrop-blur-xl border-b border-white/5 transition-colors duration-300 h-16 md:h-20">
+        <div class="container mx-auto px-4 h-full flex justify-between items-center">
+            <div class="flex items-center gap-2 cursor-pointer group" onclick="window.location.reload()">
+                <i class="fas fa-cube text-gold-500 text-lg md:text-xl"></i>
+                <span class="text-base md:text-lg font-bold tracking-[0.1em] text-gold-gradient leading-none font-serif uppercase">SOBERANUS</span>
+            </div>
+            <div class="flex items-center gap-2 md:gap-4">
+                <button onclick="toggleTheme()" class="p-2 text-gray-400 hover:text-gold-500 transition"><i class="fas fa-moon text-lg" id="theme-icon"></i></button>
+                <div id="auth-section"><button onclick="showLogin()" class="text-gold-500 text-[10px] md:text-xs font-bold uppercase border border-gold-500/20 px-3 py-1.5 rounded">Acessar</button></div>
+                <div id="user-section" class="hidden flex items-center gap-2 md:gap-4"><span id="header-username" class="text-[10px] md:text-sm font-bold text-gray-900 dark:text-white truncate max-w-[80px]"></span><button onclick="logout()" class="text-gray-600 hover:text-red-500"><i class="fas fa-power-off"></i></button></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="h-16 md:h-20"></div>
+
+    <main id="landing-page" class="flex-grow flex flex-col container mx-auto px-4 pb-10 w-full overflow-hidden">
+        <section class="py-16 md:py-24 flex flex-col items-center text-center max-w-4xl mx-auto w-full">
+            <h1 class="text-4xl md:text-7xl font-bold mb-6 font-serif text-gold-gradient leading-tight">SOBERANUS</h1>
+            <div class="space-y-6 text-gray-500 dark:text-gray-400 font-light text-sm md:text-lg leading-relaxed max-w-2xl px-2">
+                <p>O SOBERANUS é um sistema de gestão financeira descentralizada criado para quem exige ordem, clareza e autonomia no universo cripto.</p>
+                <div class="pt-4"><p class="text-gray-900 dark:text-white font-medium italic">Transforme dados em controle.</p><p class="text-gold-500 font-medium italic">Transforme controle em soberania.</p></div>
+            </div>
+            <div class="mt-12 w-full md:w-auto"><button onclick="showRegister()" class="btn-primary w-full md:w-auto px-10 py-4 rounded text-xs md:text-sm tracking-widest uppercase relative overflow-hidden group"><span class="relative z-10 block mb-1">COMECE A GERENCIAR AGORA</span><div class="absolute bottom-1 left-0 w-full flex justify-center opacity-70"><i class="fas fa-arrow-right text-[10px] animate-slide-arrow"></i></div></button></div>
+        </section>
+        <section id="features" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 py-10">
+             <div class="glass-card p-6 md:p-8 flex flex-col justify-between group"><div><i class="fas fa-fingerprint text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i><h3 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Soberania Digital</h3><p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">O poder volta para o titular. Você controla seus registros, suas métricas e suas decisões.</p></div><div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5"><p class="manifesto-quote text-xs">Controle absoluto.<br>Vigilância zero.</p></div></div>
+             <div class="glass-card p-6 md:p-8 flex flex-col justify-between group"><div><i class="fas fa-chart-line text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i><h3 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Gestão Inteligente</h3><p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Dados claros. Decisões conscientes. Registre compras e saques via PIX e DePIX com precisão.</p></div><div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5"><p class="manifesto-quote text-xs">Aqui, números não confundem.<br>Eles obedecem.</p></div></div>
+             <div class="glass-card p-6 md:p-8 flex flex-col justify-between group"><div><i class="fas fa-user-shield text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i><h3 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Privacidade & Segurança</h3><p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">O que é seu permanece com você. Nenhum rastreamento. Nenhum monitoramento de IP.</p></div><div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5"><p class="manifesto-quote text-xs">Privacidade não é um recurso.<br>É o fundamento.</p></div></div>
+             <div class="glass-card p-6 md:p-8 flex flex-col justify-between group"><div><i class="fas fa-dove text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i><h3 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Liberdade Financeira</h3><p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">Sem travas. Sem intermediários. Acompanhe seus dados em tempo real.</p></div><div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5"><p class="manifesto-quote text-xs">Conhecimento é o que separa o operador do refém.</p></div></div>
+             <div class="glass-card p-6 md:p-8 flex flex-col justify-between md:col-span-2 group relative overflow-hidden"><div class="absolute right-0 top-0 p-8 opacity-5"><i class="fas fa-water text-9xl text-black dark:text-white"></i></div><div class="relative z-10"><i class="fas fa-layer-group text-3xl text-gold-500/80 mb-6 group-hover:text-gold-400 transition"></i><h3 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4 font-serif">Infraestrutura Liquid Network</h3><p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 max-w-lg">Eficiência ancorada no Bitcoin. Uma camada financeira construída sobre o Bitcoin para emissão e troca de ativos com confidencialidade.</p></div><div class="mt-6 pt-4 border-t border-gray-200 dark:border-white/5 relative z-10"><p class="manifesto-quote text-xs">Tecnologia antiga no espírito.<br>Afiada na execução.</p></div></div>
+        </section>
+        <section class="py-16 md:py-20 border-t border-gray-200 dark:border-white/5 text-center px-4">
+            <h2 class="text-xs md:text-sm font-bold text-gold-500 uppercase tracking-[0.3em] mb-8">Manifesto Soberanus</h2>
+            <div class="space-y-6 text-base md:text-xl font-serif text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto">
+                <p>O sistema sempre foi grande. Complexo. Opaco. Intimidante.</p>
+                <p>O SOBERANUS nasce para restaurar a ordem. Não para confrontar o sistema com caos, mas para vencê-lo com clareza, precisão e disciplina.</p>
+                <p class="text-gray-900 dark:text-white">Aqui, o usuário não foge. Ele entende. Registra. Declara. Domina.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 md:gap-8 mt-10 text-[10px] md:text-xs font-mono text-gray-500 uppercase tracking-widest">
+                <span>Sem vigilância</span><span class="hidden md:inline">•</span><span>Sem intermediários</span><span class="hidden md:inline">•</span><span>Sem dependência</span>
+            </div>
+            <div class="mt-12 p-6 border-l-2 border-gold-500 bg-white/5 text-left inline-block"><p class="text-sm italic text-gray-500 dark:text-gray-400">"Soberania não é rebeldia. É responsabilidade.<br><span class="text-gray-900 dark:text-white not-italic mt-2 block">E quem assume responsabilidade não teme o Leviatã."</span></p></div>
+        </section>
+        <section class="mt-8">
+            <div class="glass-card px-4 md:px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-gray-200 dark:border-white/5 text-center md:text-left">
+                <div class="flex flex-col md:flex-row items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gold-500"><i class="fas fa-hand-holding-heart"></i></div>
+                    <div><p class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide">Suporte Voluntário</p><p class="text-xs text-gray-500 mt-1">Contribuição Soberana. Apoio consciente. Sem obrigação.</p></div>
+                </div>
+                <button onclick="openDonationModal()" class="btn-primary px-6 py-3 rounded text-xs font-bold uppercase tracking-wider w-full md:w-auto">FAÇA SUA DOAÇÃO</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="auth-forms" class="hidden fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm md:max-w-md p-6 md:p-8 relative bg-white dark:bg-dark-900">
+            <button onclick="closeAuth()" class="absolute top-4 right-4 text-gray-500 hover:text-black dark:hover:text-white"><i class="fas fa-times"></i></button>
+            <div id="login-form" class="hidden text-center">
+                <i class="fas fa-fingerprint text-4xl text-gold-500 mb-6"></i>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2 font-serif">Acesso Soberano</h2>
+                <input type="text" id="login-username" placeholder="Usuário" class="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white mb-3 focus:border-gold-500 outline-none text-base">
+                <input type="password" id="login-password" placeholder="Senha" class="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white mb-6 focus:border-gold-500 outline-none text-base">
+                <button onclick="performLogin()" class="w-full btn-primary py-3 rounded text-sm uppercase">ENTRAR</button>
+                <button onclick="switchAuthMode('register')" class="mt-6 text-xs text-gold-500 hover:text-black dark:hover:text-white transition uppercase tracking-wide">Criar nova identidade</button>
+            </div>
+            <div id="register-form" class="hidden text-center">
+                <i class="fas fa-key text-4xl text-gold-500 mb-6"></i>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2 font-serif">Gerar Chaves</h2>
+                <input type="text" id="reg-username" placeholder="Novo Usuário" class="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white mb-3 focus:border-gold-500 outline-none text-base">
+                <input type="password" id="reg-password" placeholder="Nova Senha" class="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-gray-700 rounded p-3 text-gray-900 dark:text-white mb-6 focus:border-gold-500 outline-none text-base">
+                <button onclick="performRegister()" class="w-full btn-primary py-3 rounded text-sm uppercase">CRIAR CARTEIRA</button>
+                <button onclick="switchAuthMode('login')" class="mt-6 text-xs text-gold-500 hover:text-black dark:hover:text-white transition uppercase tracking-wide">Voltar para Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="hidden fixed inset-0 z-[70] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+        <div id="modal-content" class="glass-card w-full max-w-lg p-6 md:p-8 relative max-h-[90vh] overflow-y-auto bg-white dark:bg-dark-900">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-black dark:hover:text-white"><i class="fas fa-times"></i></button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <main id="dashboard" class="hidden flex-grow container mx-auto px-4 md:px-6 py-8 w-full overflow-hidden">
+        <div class="flex flex-col gap-6 items-start mb-10 border-b border-gray-200 dark:border-white/5 pb-6">
+            <div class="w-full">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white font-serif truncate">Olá, <span id="dash-username" class="text-gold-500">Usuário</span></h2>
+                <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 italic mt-1">Com a SOBERANUS, você tem Clareza para declarar e Liberdade para decidir!</p>
+            </div>
+            <div class="w-full">
+                <span class="text-[10px] text-gold-500 font-mono block mb-1 uppercase tracking-widest">Saldo Total Estimado</span>
+                <div class="flex items-center gap-3">
+                    <span id="total-balance-display" class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">R$ •••••</span>
+                    <button onclick="toggleBalance()" class="text-gray-400 hover:text-gold-500 transition text-xl"><i class="fas fa-eye" id="balance-icon"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 md:gap-4 mb-10">
+            <button onclick="openModal('modal-buy')" class="glass-card p-4 md:p-6 h-32 md:h-40 flex flex-col justify-between items-start text-left group hover:border-green-500/30">
+                <div class="w-8 h-8 rounded bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-500 group-hover:bg-green-500 group-hover:text-black transition"><i class="fas fa-arrow-down"></i></div>
+                <div><h3 class="font-bold text-gray-900 dark:text-white text-sm md:text-lg">Comprar</h3><p class="hidden md:block text-[10px] text-gray-500 uppercase tracking-wide">Registrar Entrada</p></div>
+            </button>
+            <button onclick="openModal('modal-sell')" class="glass-card p-4 md:p-6 h-32 md:h-40 flex flex-col justify-between items-start text-left group hover:border-red-500/30">
+                <div class="w-8 h-8 rounded bg-red-900/20 flex items-center justify-center text-red-600 dark:text-red-500 group-hover:bg-red-500 group-hover:text-black transition"><i class="fas fa-arrow-up"></i></div>
+                <div><h3 class="font-bold text-gray-900 dark:text-white text-sm md:text-lg">Sacar</h3><p class="hidden md:block text-[10px] text-gray-500 uppercase tracking-wide">Registrar Saída</p></div>
+            </button>
+            <button onclick="openModal('modal-wallet')" class="glass-card p-4 md:p-6 h-32 md:h-40 flex flex-col justify-between items-start text-left group hover:border-blue-500/30">
+                <div class="w-8 h-8 rounded bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-500 group-hover:bg-blue-500 group-hover:text-black transition"><i class="fas fa-wallet"></i></div>
+                <div><h3 class="font-bold text-gray-900 dark:text-white text-sm md:text-lg">Carteira</h3><p class="hidden md:block text-[10px] text-gray-500 uppercase tracking-wide">Saldos Globais</p></div>
+            </button>
+            <button onclick="openModal('modal-ir')" class="glass-card p-4 md:p-6 h-32 md:h-40 flex flex-col justify-between items-start text-left group border-gold-500/20 hover:border-gold-500/50">
+                <div class="w-8 h-8 rounded bg-gold-900/20 flex items-center justify-center text-gold-600 dark:text-gold-500 group-hover:bg-gold-500 group-hover:text-black transition"><i class="fas fa-file-contract"></i></div>
+                <div><h3 class="font-bold text-gold-600 dark:text-gold-500 text-sm md:text-lg">Declaração</h3><p class="hidden md:block text-[10px] text-gray-500 uppercase tracking-wide">Gerar PDF</p></div>
+            </button>
+        </div>
+        <div class="mb-10">
+            <div class="glass-card p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-6 w-full">
+                <div class="w-full md:w-1/3">
+                    <h3 class="text-[9px] text-gray-400 uppercase tracking-widest mb-1">Resultado Financeiro (PnL)</h3>
+                    <span id="pnl-value" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">R$ 0,00</span>
+                </div>
+                <div class="w-full md:w-2/3">
+                    <div class="grid grid-cols-2 gap-4 text-[9px] mb-2">
+                        <div class="flex justify-between"><span class="text-gray-500">Entradas</span><span id="total-in" class="text-gray-900 dark:text-white font-mono">R$ 0</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Saídas</span><span id="total-out" class="text-gray-900 dark:text-white font-mono">R$ 0</span></div>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-[#111] h-1.5 rounded-full overflow-hidden"><div id="pnl-bar" class="bg-gray-500 h-full w-0 transition-all duration-500"></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+            <div class="lg:col-span-2 glass-card p-4 md:p-6 overflow-hidden">
+                <h3 class="text-xs font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-200 dark:border-white/5 pb-3 uppercase tracking-wide flex items-center gap-2"><i class="fas fa-list text-gold-500"></i> Livro Razão</h3>
+                <div class="overflow-x-auto w-full max-h-80 overflow-y-auto">
+                    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400 min-w-[300px]">
+                        <thead class="text-[10px] text-gray-500 uppercase bg-black/5 dark:bg-white/5 sticky top-0 backdrop-blur-sm">
+                            <tr><th class="px-2 py-3 font-semibold">Data</th><th class="px-2 py-3 font-semibold">Tipo</th><th class="px-2 py-3 font-semibold text-right">Valor</th><th class="px-2 py-3 font-semibold text-right">Qtd</th></tr>
+                        </thead>
+                        <tbody id="transaction-table-body" class="divide-y divide-gray-200 dark:divide-white/5"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="glass-card p-4 md:p-6">
+                <h3 class="text-xs font-bold text-gray-900 dark:text-white mb-6 uppercase tracking-wide flex items-center gap-2"><i class="fas fa-chart-bar text-gold-500"></i> Evolução</h3>
+                <div class="h-64 w-full"><canvas id="evolutionChart"></canvas></div>
+            </div>
+        </div>
+        <div class="text-center mt-12 pb-10">
+            <button onclick="openDonationModal()" class="text-[10px] text-gray-500 border-b border-dashed border-gray-700 uppercase tracking-widest">Contribuição Soberana</button>
+        </div>
+    </main>
+
+    <footer class="mt-auto py-10 text-center border-t border-gray-200 dark:border-white/5 bg-gray-100 dark:bg-[#020202]">
+        <div class="mb-4"><i class="fas fa-cube text-gold-500/50 text-xl"></i></div>
+        <p class="text-gray-500 text-xs mb-2 font-mono">Desenvolvido por: <span class="text-gold-500 font-bold">THxWeb3Dev</span> | SOBERANUS</p>
+        <p class="text-[9px] text-gray-700 uppercase tracking-[0.2em]">&copy; 2026 Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
